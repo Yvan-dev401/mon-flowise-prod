@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    restart: always
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - DATABASE_PATH=/root/.flowise
+      - FLOWISE_USERNAME=${FLOWISE_USERNAME}
+      - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
+      - PASSPHRASE=${PASSPHRASE}
+    volumes:
+      - flowise_data:/root/.flowise
+
+volumes:
+  flowise_data:
+```
+
+**.env.example :**
+```
+FLOWISE_USERNAME=admin
+FLOWISE_PASSWORD=changez_moi
+PASSPHRASE=votre_secret_key
+PORT=3000
+```
+
+Uploadez tout ça sur GitHub.
+
+---
+
+### Étape 3 : Déployer sur Render
+
+**3.1 - Créer un nouveau service**
+
+1. Allez sur [render.com](https://render.com)
+2. Connectez votre compte GitHub
+3. Cliquez sur **"New +"** → **"Web Service"**
+4. Sélectionnez votre repository `mon-flowise-prod`
+
+**3.2 - Configuration du service**
+
+- **Name** : `mon-flowise-app`
+- **Region** : Choisissez la plus proche
+- **Branch** : `main`
+- **Runtime** : **Docker**
+- **Instance Type** : Free (ou payant selon besoins)
+
+**3.3 - Variables d'environnement**
+
+Ajoutez dans l'onglet "Environment" :
+```
+FLOWISE_USERNAME = admin
+FLOWISE_PASSWORD = VotreMotDePasseSecurise123!
+PASSPHRASE = VotrePhraseSecrète456!
+PORT = 3000
+```
+
+**3.4 - Déployer**
+
+Cliquez sur **"Create Web Service"**
+
+Render va :
+1. ✅ Cloner votre repo GitHub
+2. ✅ Construire l'image Docker
+3. ✅ Démarrer Flowise
+4. ✅ Vous donner une URL (ex: `https://mon-flowise-app.onrender.com`)
+
+---
+
+### Étape 4 : Importer votre chatflow dans Render
+
+Une fois Flowise déployé :
+
+1. Ouvrez l'URL fournie par Render (ex: `https://mon-flowise-app.onrender.com`)
+2. Connectez-vous avec vos identifiants
+3. Allez dans **"Chatflows"**
+4. Cliquez sur **"Load Chatflow"** ou **"Import"** (icône upload)
+5. Téléchargez depuis votre GitHub ou depuis votre PC le fichier `mon-chatflow.json`
+6. Le chatflow est maintenant déployé ! ✅
+
+---
+
+### Étape 5 : Obtenir l'API endpoint
+
+1. Dans Flowise (sur Render), ouvrez votre chatflow
+2. Cliquez sur l'icône **"API"** ou **"Embed"**
+3. Vous obtenez votre endpoint :
+```
+https://mon-flowise-app.onrender.com/api/v1/prediction/VOTRE_CHATFLOW_ID
